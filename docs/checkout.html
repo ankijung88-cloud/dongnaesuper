@@ -20,9 +20,25 @@
     <div class="container">
         <h2>💳 주문/결제</h2>
 
+        <!-- Settings Toggle -->
+        <div style="text-align:right; margin-bottom:10px;">
+            <button onclick="toggleSettings()"
+                style="background:none; border:none; text-decoration:underline; color:#888;">⚙️ 결제 설정 (사업자용)</button>
+        </div>
+
+        <div id="settings-area" class="card" style="display:none; border:1px solid var(--primary);">
+            <h4>⚙️ 포트원(PortOne) 설정</h4>
+            <p style="font-size:0.8rem;">포트원 관리자 페이지에서 발급받은 <strong>가맹점 식별코드(Merchant ID)</strong>를 입력하세요.</p>
+            <input type="text" id="merchant-id-input" placeholder="예: imp00000000"
+                style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:5px;">
+            <button onclick="saveSettings()" class="btn btn-secondary"
+                style="margin-top:10px; font-size:0.8rem;">저장하기</button>
+        </div>
+
         <div class="card">
             <h3>주문 정보</h3>
-            <p>받는 분: <input type="text" id="buyer-name" placeholder="이름 입력" style="padding:5px;"></p>
+            <p>받는 분: <input type="text" id="buyer-name" placeholder="이름 입력" style="padding:5px; width:150px;"></p>
+            <p>전화번호: <input type="tel" id="buyer-tel" placeholder="010-0000-0000" style="padding:5px; width:150px;"></p>
             <p style="margin-top:5px;">배달 장소: <span id="mart-place"></span></p>
             <hr>
             <h3>결제 금액: <span id="total-price" style="color: var(--secondary);">0원</span></h3>
@@ -55,35 +71,85 @@
                 }
             }
             document.getElementById('total-price').innerText = App.formatCurrency(totalAmount);
+
+            // Load saved Merchant ID
+            const savedId = localStorage.getItem('portone_merchant_id');
+            if (savedId) document.getElementById('merchant-id-input').value = savedId;
         });
 
+        function toggleSettings() {
+            const el = document.getElementById('settings-area');
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveSettings() {
+            const id = document.getElementById('merchant-id-input').value.trim();
+            if (!id) { alert('식별코드를 입력해주세요.'); return; }
+            localStorage.setItem('portone_merchant_id', id);
+            alert('저장되었습니다.');
+            toggleSettings();
+        }
+
         function processPayment() {
-            const name = document.getElementById('buyer-name').value;
-            if (!name) { alert('이름을 입력해주세요.'); return; }
-
-            // PortOne could be used here, but for Static PWA without backend verification, 
-            // we will simulate success to ensure user can "complete" the flow.
-            // In a real static commerce app, we'd use a payment link or client-side only verify (less secure).
-
-            const confirmPay = confirm(App.formatCurrency(totalAmount) + "을 결제하시겠습니까?\n(테스트 모드: 실제 청구되지 않습니다)");
-
-            if (confirmPay) {
-                // Create Order Record
-                const order = {
-                    id: 'ORD-' + new Date().getTime(),
-                    mart: Storage.getMart().name,
-                    items: cartItems,
-                    total: totalAmount,
-                    date: new Date().toLocaleString(),
-                    status: '결제완료'
-                };
-
-                Storage.addOrder(order);
-                Storage.setCart({}); // Clear Cart
-
-                alert('주문이 완료되었습니다!');
-                window.location.href = 'orders.html';
+            const userCode = localStorage.getItem('portone_merchant_id');
+            if (!userCode) {
+                alert('결제를 진행하려면 [결제 설정]에서 가맹점 식별코드를 먼저 등록해주세요.');
+                toggleSettings();
+                return;
             }
+
+            const name = document.getElementById('buyer-name').value;
+            const tel = document.getElementById('buyer-tel').value;
+
+            if (!name) { alert('이름을 입력해주세요.'); return; }
+            if (!tel) { alert('전화번호를 입력해주세요.'); return; }
+
+            // Initialize PortOne
+            if (!window.IMP) { alert('결제 모듈 로딩 중입니다. 잠시 후 다시 시도해주세요.'); return; }
+            IMP.init(userCode);
+
+            const merchant_uid = "ORD-" + new Date().getTime();
+            const orderTitle = cartItems.length > 1 ?
+                `${cartItems[0].name} 외 ${cartItems.length - 1}건` :
+                cartItems[0].name;
+
+            // Call PortOne Request Pay
+            IMP.request_pay({
+                pg: "html5_inicis", // Default PG
+                pay_method: "card",
+                merchant_uid: merchant_uid,
+                name: orderTitle,
+                amount: totalAmount,
+                buyer_email: "test@example.com", // Optional or Add input
+                buyer_name: name,
+                buyer_tel: tel,
+                m_redirect_url: window.location.href // For mobile redirect return
+            }, function (rsp) { // Callback for PC/Mobile web (if not redirected)
+                if (rsp.success) {
+                    completeOrder(rsp);
+                } else {
+                    alert("결제에 실패하였습니다. " + rsp.error_msg);
+                }
+            });
+        }
+
+        function completeOrder(paymentData) {
+            // Create Order Record
+            const order = {
+                id: paymentData.merchant_uid,
+                imp_uid: paymentData.imp_uid,
+                mart: Storage.getMart().name,
+                items: cartItems,
+                total: totalAmount,
+                date: new Date().toLocaleString(),
+                status: '결제완료 (PG승인)'
+            };
+
+            Storage.addOrder(order);
+            Storage.setCart({}); // Clear Cart
+
+            alert('결제가 완료되었습니다!');
+            window.location.href = 'orders.html';
         }
     </script>
 </body>
