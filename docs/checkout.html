@@ -39,7 +39,8 @@
             <h3>주문 정보</h3>
             <p>받는 분: <input type="text" id="buyer-name" placeholder="이름 입력" style="padding:5px; width:150px;"></p>
             <p>전화번호: <input type="tel" id="buyer-tel" placeholder="010-0000-0000" style="padding:5px; width:150px;"></p>
-            <p style="margin-top:5px;">배달 장소: <span id="mart-place"></span></p>
+            <p>배달 주소: <input type="text" id="buyer-addr" placeholder="주소를 입력해주세요"
+                    style="padding:5px; width:100%; margin-top:5px;"></p>
             <hr>
             <h3>결제 금액: <span id="total-price" style="color: var(--secondary);">0원</span></h3>
         </div>
@@ -58,7 +59,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const mart = Storage.getMart();
-            if (mart) document.getElementById('mart-place').innerText = mart.region + " (마을회관)";
+            // Pre-fill address with mart region as a hint or default using placeholder
+            // if(mart) document.getElementById('mart-place').innerText = mart.region + " (마을회관)";
 
             const cart = Storage.getCart();
             totalAmount = 0;
@@ -100,9 +102,11 @@
 
             const name = document.getElementById('buyer-name').value;
             const tel = document.getElementById('buyer-tel').value;
+            const addr = document.getElementById('buyer-addr').value;
 
             if (!name) { alert('이름을 입력해주세요.'); return; }
             if (!tel) { alert('전화번호를 입력해주세요.'); return; }
+            if (!addr) { alert('배달 주소를 입력해주세요.'); return; }
 
             // Initialize PortOne
             if (!window.IMP) { alert('결제 모듈 로딩 중입니다. 잠시 후 다시 시도해주세요.'); return; }
@@ -123,9 +127,13 @@
                 buyer_email: "test@example.com", // Optional or Add input
                 buyer_name: name,
                 buyer_tel: tel,
+                buyer_addr: addr,
                 m_redirect_url: window.location.href // For mobile redirect return
             }, function (rsp) { // Callback for PC/Mobile web (if not redirected)
                 if (rsp.success) {
+                    // Inject address into rsp object for consistency in completeOrder if needed,
+                    // or just use the local variable 'addr'
+                    rsp.buyer_addr = addr;
                     completeOrder(rsp);
                 } else {
                     alert("결제에 실패하였습니다. " + rsp.error_msg);
@@ -141,6 +149,7 @@
                 mart: Storage.getMart().name,
                 items: cartItems,
                 total: totalAmount,
+                address: document.getElementById('buyer-addr').value, // Explicitly save address
                 date: new Date().toLocaleString(),
                 status: '결제완료 (PG승인)'
             };

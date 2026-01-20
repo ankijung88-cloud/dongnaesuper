@@ -57,7 +57,8 @@
                         </span>
                     </div>
                     <h3>${order.mart}</h3>
-                    <div style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 10px;">
+                    ${order.address ? `<p style="font-size:0.9rem; color:#666; border-bottom:1px solid #eee; padding-bottom:5px;">📍 배송지: ${order.address}</p>` : ''}
+                    <div style="margin-top: 10px; padding-top: 5px;">
                         ${order.items.map(item => `<div>- ${item.name} x ${item.qty}</div>`).join('')}
                     </div>
                     <p style="text-align: right; font-weight: bold; margin-top: 10px;">
