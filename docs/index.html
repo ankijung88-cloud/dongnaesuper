@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동네슈퍼</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS support -->
+    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="동네슈퍼">
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">🥬 동네슈퍼</a>
+    </header>
+
+    <div class="container">
+        <h2>🏠 이용하실 마트를 선택해주세요</h2>
+        <p style="color:#666; margin-bottom: 20px;">동네별로 등록된 슈퍼마켓입니다.</p>
+        <div id="mart-list"></div>
+    </div>
+
+    <!-- iOS Install Prompt Modal -->
+    <div id="ios-install-modal">
+        <h3 style="margin-bottom:10px;">앱 설치하기</h3>
+        <p>아이폰에서 앱처럼 사용하려면<br>하단의 <span style="font-size:1.5rem;">share</span> 버튼을 누르고<br><strong>'홈 화면에 추가'</strong>를
+            선택하세요.</p>
+        <button onclick="document.getElementById('ios-install-modal').style.display='none'"
+            class="btn btn-secondary">닫기</button>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+            App.renderMarts('mart-list');
+        });
+
+        // Register SW
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동네슈퍼 - 주문내역</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">🥬 동네슈퍼</a>
+    </header>
+
+    <div class="container">
+        <h2>📦 주문 내역</h2>
+        <p style="font-size:0.8rem; color:#888;">이 기기에 저장된 주문 내역입니다.</p>
+        <div id="order-list"></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="store.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </a>
+        <a href="cart.html" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            <span>장바구니</span>
+        </a>
+        <a href="orders.html" class="nav-item active">
+            <span class="nav-icon">📦</span>
+            <span>주문내역</span>
+        </a>
+    </nav>
+
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const orders = Storage.getOrders();
+            const container = document.getElementById('order-list');
+
+            if (orders.length === 0) {
+                container.innerHTML = '<p>주문 내역이 없습니다.</p>';
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #888;">${order.date}</span>
+                        <span class="badge" style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size:0.8rem;">
+                            ${order.status}
+                        </span>
+                    </div>
+                    <h3>${order.mart}</h3>
+                    <div style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 10px;">
+                        ${order.items.map(item => `<div>- ${item.name} x ${item.qty}</div>`).join('')}
+                    </div>
+                    <p style="text-align: right; font-weight: bold; margin-top: 10px;">
+                        합계: ${App.formatCurrency(order.total)}
+                    </p>
+                </div>
+            `).join('');
+        });
+    </script>
+</body>
+
+</html>

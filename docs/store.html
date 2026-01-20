@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동네슈퍼 - 장보기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">🥬 동네슈퍼</a>
+    </header>
+
+    <div class="container">
+        <div id="current-mart-info"
+            style="background: var(--primary); color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            <small>현재 이용중인 마트</small>
+            <h3 id="mart-name"></h3>
+        </div>
+
+        <div id="product-list"></div>
+    </div>
+
+    <div id="toast"
+        style="position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 2000;">
+        장바구니에 담겼습니다
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="store.html" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </a>
+        <a href="cart.html" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            <span>장바구니 <span id="cart-count"
+                    style="font-size:0.7em; background:red; color:white; border-radius:50%; padding:0 4px;"></span></span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <span class="nav-icon">📦</span>
+            <span>주문내역</span>
+        </a>
+    </nav>
+
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mart = Storage.getMart();
+            if (!mart) {
+                alert('마트를 먼저 선택해주세요!');
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('mart-name').innerText = mart.name;
+
+            App.init();
+            App.renderProducts('product-list');
+        });
+    </script>
+</body>
+
+</html>

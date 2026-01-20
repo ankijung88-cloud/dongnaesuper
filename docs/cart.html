@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동네슈퍼 - 장바구니</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">🥬 동네슈퍼</a>
+    </header>
+
+    <div class="container">
+        <h2>🛒 장바구니</h2>
+        <div id="cart-items" style="margin-top: 20px;"></div>
+
+        <div class="card" id="cart-summary" style="margin-top:20px; text-align:right;">
+            <div style="font-size: 1.2rem; font-weight: bold;">총 결제금액: <span id="total-price"
+                    style="color: var(--secondary);">0원</span></div>
+            <button onclick="location.href='checkout.html'" class="btn btn-primary" style="margin-top:15px;"
+                id="btn-checkout">주문하기</button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="store.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </a>
+        <a href="cart.html" class="nav-item active">
+            <span class="nav-icon">🛒</span>
+            <span>장바구니</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <span class="nav-icon">📦</span>
+            <span>주문내역</span>
+        </a>
+    </nav>
+
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cart = Storage.getCart();
+            const container = document.getElementById('cart-items');
+
+            if (Object.keys(cart).length === 0) {
+                container.innerHTML = '<p style="text-align:center;">장바구니가 비어있습니다.</p>';
+                document.getElementById('cart-summary').style.display = 'none';
+                return;
+            }
+
+            let total = 0;
+            let html = '';
+
+            for (const [pid, qty] of Object.entries(cart)) {
+                const product = DATA.products.find(p => p.id == pid);
+                if (product) {
+                    const subtotal = product.price * qty;
+                    total += subtotal;
+                    html += `
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${product.name}</strong>
+                            <div>${App.formatCurrency(product.price)} x ${qty}개</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold; color: var(--primary);">${App.formatCurrency(subtotal)}</div>
+                            <button onclick="remove('${pid}')" style="background: #efefef; border: none; padding: 5px 10px; border-radius: 5px; margin-top: 5px;">삭제</button>
+                        </div>
+                    </div>`;
+                }
+            }
+
+            container.innerHTML = html;
+            document.getElementById('total-price').innerText = App.formatCurrency(total);
+        });
+
+        function remove(pid) {
+            if (confirm('삭제하시겠습니까?')) {
+                Storage.updateCart(pid, 0, 'remove');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+
+</html>

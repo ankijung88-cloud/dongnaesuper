@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동네슈퍼 - 주문/결제</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- PortOne SDK (Optional for real payment later) -->
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">🥬 동네슈퍼</a>
+    </header>
+
+    <div class="container">
+        <h2>💳 주문/결제</h2>
+
+        <div class="card">
+            <h3>주문 정보</h3>
+            <p>받는 분: <input type="text" id="buyer-name" placeholder="이름 입력" style="padding:5px;"></p>
+            <p style="margin-top:5px;">배달 장소: <span id="mart-place"></span></p>
+            <hr>
+            <h3>결제 금액: <span id="total-price" style="color: var(--secondary);">0원</span></h3>
+        </div>
+
+        <button onclick="processPayment()" class="btn btn-primary" style="font-size: 1.2rem; padding: 15px;">
+            결제하기
+        </button>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let totalAmount = 0;
+        let cartItems = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mart = Storage.getMart();
+            if (mart) document.getElementById('mart-place').innerText = mart.region + " (마을회관)";
+
+            const cart = Storage.getCart();
+            totalAmount = 0;
+
+            for (const [pid, qty] of Object.entries(cart)) {
+                const product = DATA.products.find(p => p.id == pid);
+                if (product) {
+                    totalAmount += product.price * qty;
+                    cartItems.push({ name: product.name, qty: qty, price: product.price });
+                }
+            }
+            document.getElementById('total-price').innerText = App.formatCurrency(totalAmount);
+        });
+
+        function processPayment() {
+            const name = document.getElementById('buyer-name').value;
+            if (!name) { alert('이름을 입력해주세요.'); return; }
+
+            // PortOne could be used here, but for Static PWA without backend verification, 
+            // we will simulate success to ensure user can "complete" the flow.
+            // In a real static commerce app, we'd use a payment link or client-side only verify (less secure).
+
+            const confirmPay = confirm(App.formatCurrency(totalAmount) + "을 결제하시겠습니까?\n(테스트 모드: 실제 청구되지 않습니다)");
+
+            if (confirmPay) {
+                // Create Order Record
+                const order = {
+                    id: 'ORD-' + new Date().getTime(),
+                    mart: Storage.getMart().name,
+                    items: cartItems,
+                    total: totalAmount,
+                    date: new Date().toLocaleString(),
+                    status: '결제완료'
+                };
+
+                Storage.addOrder(order);
+                Storage.setCart({}); // Clear Cart
+
+                alert('주문이 완료되었습니다!');
+                window.location.href = 'orders.html';
+            }
+        }
+    </script>
+</body>
+
+</html>
