@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>🏠 이용하실 마트를 선택해주세요</h2>
+<p style="color:#666; margin-bottom: 20px;">동네별로 등록된 슈퍼마켓입니다.</p>
+
+{% if marts %}
+{% for mart in marts %}
+<div class="card" onclick="selectMart('{{ mart.id }}')">
+    <h3 style="color: var(--primary);">{{ mart.name }}</h3>
+    <p style="font-size: 0.9rem;">📍 {{ mart.region }} {{ mart.address }}</p>
+    <p>📞 {{ mart.phone }}</p>
+    <form id="form-{{ mart.id }}" action="{% url 'core:set_mart' %}" method="post" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" name="mart_id" value="{{ mart.id }}">
+    </form>
+</div>
+{% endfor %}
+{% else %}
+<div class="card">
+    <p>등록된 마트가 없습니다.</p>
+</div>
+{% endif %}
+
+<script>
+    function selectMart(id) {
+        document.getElementById('form-' + id).submit();
+    }
+</script>
+{% endblock %}

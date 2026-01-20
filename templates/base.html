@@ -1,0 +1,190 @@
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동네슈퍼</title>
+    {% progressive_web_app_meta %}
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- iOS support -->
+    <link rel="apple-touch-icon" href="/static/images/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="동네슈퍼">
+
+    <style>
+        :root {
+            --primary: #2e8b57;
+            /* SeaGreen: Fresh */
+            --secondary: #ff8c00;
+            /* DarkOrange: Accent */
+            --bg: #f8f9fa;
+            --text: #333;
+            --white: #ffffff;
+            --gray: #e9ecef;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-bottom: 70px;
+        }
+
+        header {
+            background: var(--white);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .container {
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Bottom Nav */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-top: 1px solid var(--gray);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+            z-index: 999;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <header>
+        <a href="{% url 'core:mart_list' %}" class="logo">🥬 동네슈퍼</a>
+        {% block header_actions %}{% endblock %}
+    </header>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="{% url 'core:store_home' %}" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </a>
+        <a href="{% url 'core:cart' %}" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            <span>장바구니</span>
+        </a>
+        <a href="{% url 'core:order_list' %}" class="nav-item">
+            <span class="nav-icon">📦</span>
+            <span>주문내역</span>
+        </a>
+    </nav>
+
+    <script>
+        // CSRF Token Helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

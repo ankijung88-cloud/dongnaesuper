@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if mart %}
+<div style="background: var(--primary); color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+    <small>현재 이용중인 마트</small>
+    <h3>{{ mart.name }}</h3>
+</div>
+{% else %}
+<div class="card" style="border-left: 5px solid red;">
+    <a href="{% url 'core:mart_list' %}">마트를 먼저 선택해주세요!</a>
+</div>
+{% endif %}
+
+{% for category in categories %}
+<h3 style="margin-top: 20px; border-bottom: 2px solid var(--secondary); display: inline-block;">{{ category.name }}</h3>
+<div style="margin-top: 10px;">
+    {% for product in category.products.all %}
+    <div class="card" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+            <input type="checkbox" id="p-{{ product.id }}" class="product-check"
+                style="transform: scale(1.5); margin-right: 15px;" onchange="toggleCart('{{ product.id }}')" {% if
+                product.id|stringformat:"i" in cart_ids %}checked{% endif %}>
+
+            <div>
+                <strong>{{ product.name }}</strong>
+                <div style="color: var(--secondary); font-weight: bold;">{{ product.price }}원</div>
+                <small style="color: #888;">{{ product.description|truncatechars:30 }}</small>
+            </div>
+        </div>
+        {% if product.image %}
+        <img src="{{ product.image.url }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% comment %} Floating Cart or just Bottom Nav indicator {% endcomment %}
+<div id="toast"
+    style="position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 2000;">
+    장바구니에 담겼습니다
+</div>
+
+<script>
+    function toggleCart(productId) {
+        fetch("{% url 'core:cart_action' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                action: 'toggle'
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showToast("장바구니가 업데이트 되었습니다 (" + data.cart_count + ")");
+                }
+            });
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 2000);
+    }
+</script>
+{% endblock %}
