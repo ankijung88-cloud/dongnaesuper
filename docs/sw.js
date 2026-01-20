@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dongnaesuper-v1';
+const CACHE_NAME = 'dongnaesuper-v2';
 const ASSETS = [
     './index.html',
     './store.html',
@@ -9,8 +9,8 @@ const ASSETS = [
     './js/app.js',
     './js/data.js',
     './js/storage.js',
-    './images/icon-192x192.png',
-    './images/icon-512x512.png'
+    './images/icon-v2-192.png',
+    './images/icon-v2-512.png'
 ];
 
 self.addEventListener('install', (e) => {
