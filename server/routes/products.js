@@ -1,28 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/upload');
+const auth = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'supersecretkey'; // Should be in .env
 
-const auth = require('../middleware/auth'); // Optional: Add auth middleware to protected routes later
+const { products } = require('../data/mockDb');
 
-// Mock Data for "Time Deal"
-// isTimeDeal: true/false, discountPrice: number (saving calculation)
-let products = [
-    { id: 1, name: 'Fresh Apples (Bag)', price: 5000, discountPrice: 3000, stock: 5, isTimeDeal: true, image: '/uploads/apple.jpg', category: 'fresh' },
-    { id: 2, name: 'Instant Noodle (Pack)', price: 4000, discountPrice: null, stock: 20, isTimeDeal: false, image: '/uploads/noodle.jpg', category: 'processed' }
-];
-
-// GET all products (Public)
+// GET all products
 router.get('/', (req, res) => {
+    let requestUser = null;
+
+    // Check for token manually for optional auth
+    const token = req.header('x-auth-token');
+    if (token) {
+        try {
+            requestUser = jwt.verify(token, SECRET_KEY);
+        } catch (e) {
+            // Invalid token, treat as guest
+        }
+    }
+
+    // Role-based filtering
+    let productList = products;
+    if (requestUser && requestUser.role === 'owner') {
+        productList = products.filter(p => p.ownerId === requestUser.id);
+    }
+    // Admins and Guests (Customers) see ALL products
+
     // Filter for Time Deals if query param exists ?type=timedeal
     if (req.query.type === 'timedeal') {
-        const timeDeals = products.filter(p => p.isTimeDeal);
-        return res.json(timeDeals);
+        productList = productList.filter(p => p.isTimeDeal);
     }
-    res.json(products);
+
+    res.json(productList);
 });
 
 // POST new product (with image)
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', auth, upload.single('image'), (req, res) => {
     try {
         const { name, price, stock } = req.body;
         const file = req.file;
@@ -33,10 +48,13 @@ router.post('/', upload.single('image'), (req, res) => {
 
         const newProduct = {
             id: products.length + 1,
+            ownerId: req.user.id, // Assign to logged-in owner
             name,
             price: Number(price),
             stock: Number(stock),
-            image: `/uploads/${file.filename}`
+            image: `/uploads/${file.filename}`,
+            category: '기타', // Default category if not provided
+            subCategory: '기타'
         };
 
         products.push(newProduct);
@@ -44,6 +62,24 @@ router.post('/', upload.single('image'), (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// DELETE product
+router.delete('/:id', auth, (req, res) => {
+    const id = Number(req.params.id);
+    const index = products.findIndex(p => p.id === id);
+
+    if (index === -1) return res.status(404).json({ msg: 'Product not found' });
+
+    const product = products[index];
+
+    // Check ownership (Admin can delete anything, Owner only theirs)
+    if (req.user.role !== 'admin' && product.ownerId !== req.user.id) {
+        return res.status(403).json({ msg: 'Access denied: Not your product' });
+    }
+
+    products.splice(index, 1);
+    res.json({ msg: 'Product deleted' });
 });
 
 module.exports = router;

@@ -22,7 +22,7 @@ const Cart = () => {
     };
 
     const handleOrder = async () => {
-        if (cartItems.length === 0) return alert('Cart is empty');
+        if (cartItems.length === 0) return alert('장바구니가 비어있습니다');
 
         try {
             const orderData = {
@@ -33,42 +33,42 @@ const Cart = () => {
             };
 
             await axios.post('/api/orders', orderData);
-            alert('Order Placed Successfully!');
+            alert('주문이 완료되었습니다!');
             Storage.clearCart();
         } catch (err) {
             console.error(err);
-            alert('Order Failed');
+            alert('주문 실패');
         }
     };
 
     return (
         <div style={{ padding: '20px' }}>
-            <h2>Your Cart</h2>
-            {cartItems.length === 0 ? <p>Empty</p> : (
+            <h2>장바구니</h2>
+            {cartItems.length === 0 ? <p>비어있음</p> : (
                 <ul>
                     {cartItems.map(item => (
                         <li key={item.id}>
-                            {item.name} x {item.qty} = {item.price * item.qty} KRW
+                            {item.name} x {item.qty} = {item.price * item.qty} 원
                             <button onClick={() => Storage.updateCart(item, 0, 'remove')}>X</button>
                         </li>
                     ))}
                 </ul>
             )}
-            <h3>Total: {total} KRW</h3>
+            <h3>총계: {total} 원</h3>
 
             <div style={{ border: '2px solid #ff9800', padding: '15px', marginTop: '20px', borderRadius: '8px' }}>
-                <h4>⚠️ If an item is sold out (POS Mismatch):</h4>
+                <h4>⚠️ 품절 시 대체 방법 (필수 선택):</h4>
                 <label style={{ display: 'block', margin: '5px 0' }}>
                     <input type="radio" name="sub" value="CALL" checked={subPref === 'CALL'} onChange={(e) => setSubPref(e.target.value)} />
-                    📞 Please Call Me
+                    📞 전화주세요
                 </label>
                 <label style={{ display: 'block', margin: '5px 0' }}>
                     <input type="radio" name="sub" value="REPLACE" checked={subPref === 'REPLACE'} onChange={(e) => setSubPref(e.target.value)} />
-                    🔄 Replace with similar item (Owner's Pick)
+                    🔄 비슷한 상품으로 대체 (사장님 추천)
                 </label>
                 <label style={{ display: 'block', margin: '5px 0' }}>
                     <input type="radio" name="sub" value="REFUND" checked={subPref === 'REFUND'} onChange={(e) => setSubPref(e.target.value)} />
-                    💰 Refund that item only
+                    💰 해당 상품만 환불
                 </label>
             </div>
 
@@ -76,7 +76,7 @@ const Cart = () => {
                 onClick={handleOrder}
                 style={{ marginTop: '20px', padding: '15px 30px', fontSize: '18px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}
             >
-                Place Order
+                주문하기
             </button>
         </div>
     );

@@ -2,15 +2,10 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-// Mock User Database
-// Default accounts for testing
-let users = [
-    { id: 1, name: 'Normal User', email: 'user@test.com', password: '123', role: 'user' },
-    { id: 2, name: 'Store Owner', email: 'owner@test.com', password: '123', role: 'owner' },
-    { id: 3, name: 'Super Admin', email: 'admin@test.com', password: '123', role: 'admin' }
-];
+const { users } = require('../data/mockDb');
 
 const SECRET_KEY = 'supersecretkey'; // Same as middleware/auth.js
+const auth = require('../middleware/auth');
 
 // POST /api/auth/register
 router.post('/register', (req, res) => {
@@ -30,7 +25,8 @@ router.post('/register', (req, res) => {
         name,
         email,
         password, // In real app, hash this!
-        role // 'user', 'owner', 'admin'
+        role, // 'user', 'owner', 'admin'
+        joinDate: new Date().toISOString().split('T')[0]
     };
 
     users.push(newUser);
@@ -46,6 +42,59 @@ router.post('/register', (req, res) => {
             email: newUser.email,
             role: newUser.role
         }
+    });
+
+    // GET /api/auth/users (Admin Only)
+    router.get('/users', auth, (req, res) => {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ msg: 'Access denied' });
+        }
+        // Return users without passwords
+        const safeUsers = users.map(u => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            joinDate: u.joinDate
+        }));
+        res.json(safeUsers);
+    });
+
+    // POST /api/auth/create-owner (Admin Only)
+    router.post('/create-owner', auth, (req, res) => {
+        // Check if admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ msg: 'Access denied: Admins only' });
+        }
+
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ msg: 'Please enter all fields' });
+        }
+
+        const existingUser = users.find(u => u.email === email);
+        if (existingUser) return res.status(400).json({ msg: 'User already exists' });
+
+        const newUser = {
+            id: users.length + 1,
+            name,
+            email,
+            password,
+            role: 'owner',
+            joinDate: new Date().toISOString().split('T')[0]
+        };
+
+        users.push(newUser);
+
+        res.json({
+            msg: 'Store Owner created successfully',
+            owner: {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email
+            }
+        });
     });
 });
 

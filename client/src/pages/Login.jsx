@@ -12,25 +12,27 @@ const Login = () => {
         e.preventDefault();
         try {
             const user = await login(email, password);
-            alert(`Welcome back, ${user.name}!`);
+            alert(`환영합니다, ${user.name}님!`);
             if (user.role === 'admin') navigate('/super-admin');
             else if (user.role === 'owner') navigate('/admin/products');
             else navigate('/');
         } catch (err) {
-            alert(err.response?.data?.msg || 'Login Failed');
+            console.error('Login Error:', err);
+            const msg = err.response?.data?.msg || err.message;
+            alert(`로그인 실패: ${msg}`);
         }
     };
 
     return (
         <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-            <h2>Login</h2>
+            <h2>로그인</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required style={{ padding: '10px' }} />
-                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required style={{ padding: '10px' }} />
-                <button type="submit" style={{ padding: '10px', background: '#2196F3', color: 'white', border: 'none' }}>Login</button>
+                <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} required style={{ padding: '10px' }} />
+                <input type="password" placeholder="비밀번호" value={password} onChange={e => setPassword(e.target.value)} required style={{ padding: '10px' }} />
+                <button type="submit" style={{ padding: '10px', background: '#2196F3', color: 'white', border: 'none' }}>로그인</button>
             </form>
             <p style={{ marginTop: '10px' }}>
-                No account? <Link to="/signup">Sign up</Link>
+                계정이 없으신가요? <Link to="/signup">회원가입</Link>
             </p>
         </div>
     );

@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import ProductManage from './pages/ProductManage';
 import Cart from './pages/Cart';
 import SuperAdmin from './pages/SuperAdmin';
+import AdminUserManage from './pages/AdminUserManage';
 import Navbar from './components/Navbar';
 import { LanguageProvider } from './context/LanguageContext';
 
@@ -10,6 +11,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+
+import PosTerminal from './pages/PosTerminal';
 
 function App() {
   return (
@@ -22,6 +25,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/pos" element={<PosTerminal />} />
 
               {/* Protected Routes */}
               <Route path="/cart" element={
@@ -37,6 +41,11 @@ function App() {
               <Route path="/super-admin" element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <SuperAdmin />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/users" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminUserManage />
                 </ProtectedRoute>
               } />
             </Routes>

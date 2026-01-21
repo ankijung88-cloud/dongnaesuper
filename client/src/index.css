@@ -69,3 +69,119 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Product Grid Layout */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* Mobile: 2 columns */
+  gap: 10px;
+  padding-bottom: 20px;
+}
+
+/* Header Layout */
+.header-left-section {
+  display: flex;
+  flex-direction: column;
+  /* Mobile default: Column */
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.search-bar-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  border: 2px solid #ddd;
+  border-radius: 30px;
+  padding: 2px 10px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  width: 100%;
+  /* Full width within container */
+  padding: 12px 0;
+}
+
+/* Product Card - Standardized Layout */
+.product-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  /* Flexbox */
+  flex-direction: column;
+  /* Stack vertically */
+  height: 100%;
+  /* Fill grid cell height */
+  background: white;
+  box-sizing: border-box;
+}
+
+.product-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-info {
+  flex: 1;
+  /* Takes up remaining space pushing button down */
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.product-name {
+  margin: 5px 0;
+  font-weight: 500;
+  /* Optional: Clamp lines if needed, but flex usually handles spacing well */
+}
+
+.product-price {
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  padding: 8px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-top: auto;
+  /* Key: Pushes button to bottom */
+}
+
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+  .product-list {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .header-left-section {
+    flex-direction: row;
+    /* Desktop: Row */
+    align-items: center;
+    gap: 15px;
+    width: auto;
+  }
+
+  .search-bar-container {
+    width: auto;
+    min-width: 380px;
+  }
+}
