@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Storage from '../utils/storage';
+import { useLanguage } from '../context/LanguageContext';
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [subPref, setSubPref] = useState('CALL'); // Default: Call me
+    const { t, lang } = useLanguage();
 
     useEffect(() => {
         loadCart();
@@ -22,7 +24,7 @@ const Cart = () => {
     };
 
     const handleOrder = async () => {
-        if (cartItems.length === 0) return alert('장바구니가 비어있습니다');
+        if (cartItems.length === 0) return alert(t('emptyCart'));
 
         try {
             const orderData = {
@@ -43,32 +45,32 @@ const Cart = () => {
 
     return (
         <div style={{ padding: '20px' }}>
-            <h2>장바구니</h2>
-            {cartItems.length === 0 ? <p>비어있음</p> : (
+            <h2>{t('cartTitle')}</h2>
+            {cartItems.length === 0 ? <p>{t('emptyCart')}</p> : (
                 <ul>
                     {cartItems.map(item => (
                         <li key={item.id}>
-                            {item.name} x {item.qty} = {item.price * item.qty} 원
+                            {item.name_multiling?.[lang] || item.name} x {item.qty} = {item.price * item.qty} 원
                             <button onClick={() => Storage.updateCart(item, 0, 'remove')}>X</button>
                         </li>
                     ))}
                 </ul>
             )}
-            <h3>총계: {total} 원</h3>
+            <h3>{t('totalPrice')}: {total} 원</h3>
 
             <div style={{ border: '2px solid #ff9800', padding: '15px', marginTop: '20px', borderRadius: '8px' }}>
-                <h4>⚠️ 품절 시 대체 방법 (필수 선택):</h4>
+                <h4>{t('subTitle')}</h4>
                 <label style={{ display: 'block', margin: '5px 0' }}>
                     <input type="radio" name="sub" value="CALL" checked={subPref === 'CALL'} onChange={(e) => setSubPref(e.target.value)} />
-                    📞 전화주세요
+                    {t('subCall')}
                 </label>
                 <label style={{ display: 'block', margin: '5px 0' }}>
                     <input type="radio" name="sub" value="REPLACE" checked={subPref === 'REPLACE'} onChange={(e) => setSubPref(e.target.value)} />
-                    🔄 비슷한 상품으로 대체 (사장님 추천)
+                    {t('subReplace')}
                 </label>
                 <label style={{ display: 'block', margin: '5px 0' }}>
                     <input type="radio" name="sub" value="REFUND" checked={subPref === 'REFUND'} onChange={(e) => setSubPref(e.target.value)} />
-                    💰 해당 상품만 환불
+                    {t('subRefund')}
                 </label>
             </div>
 
@@ -76,7 +78,7 @@ const Cart = () => {
                 onClick={handleOrder}
                 style={{ marginTop: '20px', padding: '15px 30px', fontSize: '18px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}
             >
-                주문하기
+                {t('checkout')}
             </button>
         </div>
     );

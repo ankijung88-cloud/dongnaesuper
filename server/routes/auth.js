@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-const { users } = require('../data/mockDb');
+const { users, save } = require('../data/mockDb');
 
 const SECRET_KEY = 'supersecretkey'; // Same as middleware/auth.js
 const auth = require('../middleware/auth');
@@ -30,6 +30,7 @@ router.post('/register', (req, res) => {
     };
 
     users.push(newUser);
+    save();
 
     // Create token
     const token = jwt.sign({ id: newUser.id, role: newUser.role, name: newUser.name }, SECRET_KEY, { expiresIn: '1h' });

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Signup = () => {
     const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'user' });
     const { register } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,23 +26,23 @@ const Signup = () => {
 
     return (
         <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-            <h2>회원가입</h2>
+            <h2>{t('signupTitle')}</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <input name="name" type="text" placeholder="이름" onChange={handleChange} required style={{ padding: '10px' }} />
-                <input name="email" type="email" placeholder="이메일" onChange={handleChange} required style={{ padding: '10px' }} />
-                <input name="password" type="password" placeholder="비밀번호" onChange={handleChange} required style={{ padding: '10px' }} />
+                <input name="name" type="text" placeholder={t('namePlaceholder')} onChange={handleChange} required style={{ padding: '10px' }} />
+                <input name="email" type="email" placeholder={t('emailPlaceholder')} onChange={handleChange} required style={{ padding: '10px' }} />
+                <input name="password" type="password" placeholder={t('passwordPlaceholder')} onChange={handleChange} required style={{ padding: '10px' }} />
 
-                <label>역할 (Role):</label>
+                <label>{t('roleLabel')}</label>
                 <select name="role" value={formData.role} onChange={handleChange} style={{ padding: '10px' }}>
-                    <option value="user">일반 사용자 (고객)</option>
-                    <option value="owner">점주 (Store Owner)</option>
-                    <option value="admin">슈퍼 관리자 (Super Admin)</option>
+                    <option value="user">{t('roleUser')}</option>
+                    <option value="owner">{t('roleOwner')}</option>
+                    <option value="admin">{t('roleAdmin')}</option>
                 </select>
 
-                <button type="submit" style={{ padding: '10px', background: '#4CAF50', color: 'white', border: 'none' }}>회원가입</button>
+                <button type="submit" style={{ padding: '10px', background: '#4CAF50', color: 'white', border: 'none' }}>{t('signupTitle')}</button>
             </form>
             <p style={{ marginTop: '10px' }}>
-                이미 계정이 있으신가요? <Link to="/login">로그인</Link>
+                {t('hasAccount')} <Link to="/login">{t('login')}</Link>
             </p>
         </div>
     );

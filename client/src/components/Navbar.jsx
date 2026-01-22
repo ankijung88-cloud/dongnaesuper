@@ -28,7 +28,7 @@ const Navbar = () => {
             gap: isOwnerPage ? '10px' : '0'
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold' }}>🏠 동네슈퍼</Link>
+                <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold' }}>🏠 {t('title')}</Link>
 
                 {/* Language Switcher moved here */}
                 <LanguageSwitcher />
@@ -54,12 +54,12 @@ const Navbar = () => {
                         {!isOwnerPage && (
                             <Link to="/cart" style={{ textDecoration: 'none' }}>🛒 {t('cart')}</Link>
                         )}
-                        <button onClick={handleLogout} style={{ padding: '5px 10px', cursor: 'pointer' }}>로그아웃</button>
+                        <button onClick={handleLogout} style={{ padding: '5px 10px', cursor: 'pointer' }}>{t('logout')}</button>
                     </>
                 ) : (
                     <>
-                        <Link to="/login" style={{ textDecoration: 'none' }}>로그인</Link>
-                        <Link to="/signup" style={{ textDecoration: 'none' }}>회원가입</Link>
+                        <Link to="/login" style={{ textDecoration: 'none' }}>{t('login')}</Link>
+                        <Link to="/signup" style={{ textDecoration: 'none' }}>{t('signup')}</Link>
                     </>
                 )}
             </div>
