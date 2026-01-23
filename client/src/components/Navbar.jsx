@@ -18,48 +18,52 @@ const Navbar = () => {
     };
 
     return (
-        <nav style={{
-            padding: '10px',
-            background: '#eee',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: isOwnerPage ? 'stretch' : 'center',
-            flexDirection: isOwnerPage ? 'column' : 'row',
-            gap: isOwnerPage ? '10px' : '0'
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold' }}>🏠 {t('title')}</Link>
+        <nav className="navbar">
+            <div className="navbar-links">
+                <Link to="/" className="navbar-brand">
+                    <span>🏠</span> {t('title')}
+                </Link>
 
-                {/* Language Switcher moved here */}
                 <LanguageSwitcher />
 
                 {/* Owner Link */}
                 {user && (user.role === 'owner' || user.role === 'admin') && (
-                    <Link to="/admin/products" style={{ textDecoration: 'none' }}>🔧 {t('owner')}</Link>
+                    <Link to="/admin/products" className="nav-link">
+                        🔧 {t('owner')}
+                    </Link>
                 )}
 
                 {/* Admin Link */}
                 {user && user.role === 'admin' && (
                     <>
-                        <Link to="/super-admin" style={{ textDecoration: 'none' }}>👑 Stats</Link>
-                        <Link to="/admin/users" style={{ textDecoration: 'none' }}>👥 Users</Link>
+                        <Link to="/super-admin" className="nav-link">👑 Stats</Link>
+                        <Link to="/admin/users" className="nav-link">👥 Users</Link>
                     </>
                 )}
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: isOwnerPage ? 'flex-end' : 'flex-start' }}>
+            <div className="auth-buttons">
                 {user ? (
                     <>
-                        <span>👤 {user.name} ({user.role})</span>
+                        <span style={{ display: 'flex', alignItems: 'center', fontWeight: '500' }}>
+                            👤 {user.name}
+                        </span>
                         {!isOwnerPage && (
-                            <Link to="/cart" style={{ textDecoration: 'none' }}>🛒 {t('cart')}</Link>
+                            <>
+                                <Link to="/orders" className="nav-link">📦 {t('orderHistory')}</Link>
+                                <Link to="/cart" className="nav-link">🛒 {t('cart')}</Link>
+                            </>
                         )}
-                        <button onClick={handleLogout} style={{ padding: '5px 10px', cursor: 'pointer' }}>{t('logout')}</button>
+                        <button onClick={handleLogout} className="btn-sm" style={{ background: 'var(--text-muted)' }}>
+                            {t('logout')}
+                        </button>
                     </>
                 ) : (
                     <>
-                        <Link to="/login" style={{ textDecoration: 'none' }}>{t('login')}</Link>
-                        <Link to="/signup" style={{ textDecoration: 'none' }}>{t('signup')}</Link>
+                        <Link to="/login" className="nav-link">{t('login')}</Link>
+                        <Link to="/signup" className="nav-link">
+                            {t('signup')}
+                        </Link>
                     </>
                 )}
             </div>

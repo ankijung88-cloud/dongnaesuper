@@ -35,6 +35,13 @@ router.post('/', (req, res) => {
 
 // GET My Orders (Needs Auth usually, mock for now)
 router.get('/', (req, res) => {
+    const { email } = req.query;
+    if (email) {
+        // Filter by user email if provided
+        const userOrders = orders.filter(o => o.userInfo && o.userInfo.email === email);
+        return res.json(userOrders);
+    }
+    // If no email (Admin or Debug), return all
     res.json(orders);
 });
 

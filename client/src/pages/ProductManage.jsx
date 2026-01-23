@@ -204,7 +204,7 @@ const ProductManage = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                 <h2 style={{ margin: 0 }}>상품 등록 (점주용)</h2>
                 <button
@@ -252,7 +252,9 @@ const ProductManage = () => {
 
             {/* Registration Form */}
             <details style={{ marginBottom: '20px' }}>
-                <summary style={{ cursor: 'pointer', color: '#666', marginBottom: '10px' }}>수동 등록 (상품이 POS에 없는 경우)</summary>
+                <summary style={{ cursor: 'pointer', color: '#d32f2f', fontWeight: 'bold', fontSize: '18px', marginBottom: '15px', padding: '15px', backgroundColor: '#ffebee', borderRadius: '8px', border: '1px solid #ffcdd2' }}>
+                    ✍ 수동 등록 (상품이 POS에 없는 경우 - 클릭하여 열기)
+                </summary>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '400px', marginBottom: '40px' }}>
                     <input type="text" placeholder="상품명" value={name} onChange={e => setName(e.target.value)} required style={{ padding: '8px' }} />
                     <input type="number" placeholder="가격 (원)" value={price} onChange={e => setPrice(e.target.value)} required style={{ padding: '8px' }} />
@@ -275,9 +277,9 @@ const ProductManage = () => {
             <hr />
 
             {/* Split Layout: Product Grid (Left) + Dashboard (Right) */}
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+            <div className="owner-layout-container">
 
-                <div style={{ flex: 3 }}>
+                <div className="owner-grid-section">
                     <div style={{ marginBottom: '20px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                             <h3 style={{ margin: 0 }}>재고 목록 ({filteredProducts.length})</h3>
@@ -340,26 +342,14 @@ const ProductManage = () => {
                         )}
                     </div>
 
-                    {/* 6-Column Grid */}
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(6, 1fr)',
-                        gap: '10px',
-                        width: '100%',
-                    }}>
+                    {/* Responsive Grid */}
+                    <div className="owner-product-grid">
                         {filteredProducts.map(product => (
-                            <div key={product.id} style={{
-                                border: selectedIds.has(product.id) ? '2px solid #2196F3' : '1px solid #ddd',
-                                borderRadius: '8px',
-                                overflow: 'hidden',
-                                position: 'relative',
-                                background: 'white',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                aspectRatio: '1/1.2',
-                                display: 'flex',
-                                flexDirection: 'column'
-                            }}>
-                                <div style={{ position: 'absolute', top: '5px', left: '5px', zIndex: 10 }}>
+                            <div
+                                key={product.id}
+                                className={`owner-product-card ${selectedIds.has(product.id) ? 'selected' : ''}`}
+                            >
+                                <div className="owner-card-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={selectedIds.has(product.id)}
@@ -367,19 +357,19 @@ const ProductManage = () => {
                                         style={{ transform: 'scale(1.5)', cursor: 'pointer' }}
                                     />
                                 </div>
-                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                <div className="owner-card-image-container">
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        className="owner-card-image"
                                     />
                                 </div>
-                                <div style={{ padding: '10px', fontSize: '12px', textAlign: 'center', background: '#fff', borderTop: '1px solid #eee' }}>
-                                    <div style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '5px' }}>
+                                <div className="owner-card-info">
+                                    <div className="owner-card-title">
                                         {product.name}
                                     </div>
-                                    <div style={{ color: '#E91E63', fontWeight: 'bold', fontSize: '13px' }}>{product.price.toLocaleString()}원</div>
-                                    <div style={{ color: '#888', marginTop: '3px' }}>재고: {product.stock}개</div>
+                                    <div className="owner-card-price">{product.price.toLocaleString()}원</div>
+                                    <div className="owner-card-stock">재고: {product.stock}개</div>
                                 </div>
                             </div>
                         ))}
@@ -387,12 +377,7 @@ const ProductManage = () => {
                 </div>
 
                 {/* RIGHT: Store Dashboard Panel (Fixed Width) */}
-                <div style={{
-                    flex: 1,
-                    minWidth: '300px',
-                    position: 'sticky',
-                    top: '20px'
-                }}>
+                <div className="owner-stats-panel">
                     <div style={{ background: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0' }}>
                         <h3 style={{ marginTop: 0, borderBottom: '2px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>📊 내 점포 현황</h3>
 

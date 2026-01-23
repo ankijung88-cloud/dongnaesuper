@@ -4,10 +4,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const { incrementVisitorCount } = require('./data/mockDb');
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Visitor Tracker Middleware
+app.use((req, res, next) => {
+    if (req.method === 'GET' && req.url.startsWith('/api/products')) {
+        incrementVisitorCount();
+    }
+    next();
+});
 
 // Debug Logger
 app.use((req, res, next) => {
@@ -35,8 +45,8 @@ app.use('/api/pos', posRoutes);
 // Assuming dist is at ../client/dist relative to server.js
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// SPA Fallback: matches any GET request not handled above
-app.get(/.*/, (req, res) => {
+// SPA Fallback: matches any request not handled above
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
 });
 

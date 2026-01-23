@@ -25,6 +25,18 @@ const SuperAdmin = () => {
         }
     };
 
+    const handleDeleteUser = async (id) => {
+        if (!window.confirm('정말로 이 점포(사용자)를 삭제하시겠습니까?')) return;
+        try {
+            await axios.delete(`/api/admin/users/${id}`);
+            alert('삭제되었습니다.');
+            fetchData(); // Refresh list
+        } catch (err) {
+            console.error(err);
+            alert('삭제 실패');
+        }
+    };
+
     const getFormattedDate = (daysAgo = 0) => {
         const date = new Date();
         date.setDate(date.getDate() - daysAgo);
@@ -32,7 +44,7 @@ const SuperAdmin = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div>
             <h1 style={{ color: '#673AB7' }}>👑 슈퍼 관리자 대시보드</h1>
 
             {/* Stats Cards */}
@@ -58,7 +70,7 @@ const SuperAdmin = () => {
 
             {/* Sales by Region/Store */}
             <div style={{ ...sectionStyle, marginBottom: '20px' }}>
-                <h2>지역별 점포 매출 현황</h2>
+                <h2>지역별 점포 매출 현황 (등록된 점포)</h2>
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
                         <thead>
@@ -75,36 +87,61 @@ const SuperAdmin = () => {
                                     금일매출액<br />
                                     <span style={{ fontSize: '11px' }}>{getFormattedDate(0)} (00:00~현재)</span>
                                 </th>
+                                <th style={{ padding: '10px', borderBottom: '2px solid #ddd', textAlign: 'center' }}>관리</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {stats.salesByRegion && stats.salesByRegion.map((item, index) => (
-                                <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
-                                    <td style={{ padding: '10px' }}>{item.region}</td>
-                                    <td style={{ padding: '10px' }}>{item.store}</td>
-                                    <td style={{ padding: '10px', textAlign: 'center' }}>
-                                        <span style={{
-                                            padding: '4px 8px',
-                                            borderRadius: '12px',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            color: item.settlementStatus ? '#2e7d32' : '#c62828',
-                                            backgroundColor: item.settlementStatus ? '#e8f5e9' : '#ffebee'
-                                        }}>
-                                            {item.settlementStatus ? '정산완료' : '미완료'}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '10px', textAlign: 'right', color: '#666' }}>
-                                        {item.yesterdaySales.toLocaleString()} 원
-                                    </td>
-                                    <td style={{ padding: '10px', textAlign: 'right', fontWeight: 'bold', color: '#1976D2' }}>
-                                        {item.settlementAmount ? item.settlementAmount.toLocaleString() : 0} 원
-                                    </td>
-                                    <td style={{ padding: '10px', textAlign: 'right', fontWeight: 'bold', color: '#d32f2f' }}>
-                                        {item.todaySales.toLocaleString()} 원
+                            {stats.salesByRegion && stats.salesByRegion.length > 0 ? (
+                                stats.salesByRegion.map((item, index) => (
+                                    <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
+                                        <td style={{ padding: '10px' }}>{item.region}</td>
+                                        <td style={{ padding: '10px', fontWeight: 'bold' }}>{item.store}</td>
+                                        <td style={{ padding: '10px', textAlign: 'center' }}>
+                                            <span style={{
+                                                padding: '4px 8px',
+                                                borderRadius: '12px',
+                                                fontSize: '12px',
+                                                fontWeight: 'bold',
+                                                color: item.settlementStatus ? '#2e7d32' : '#c62828',
+                                                backgroundColor: item.settlementStatus ? '#e8f5e9' : '#ffebee'
+                                            }}>
+                                                {item.settlementStatus ? '정산완료' : '미완료'}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '10px', textAlign: 'right', color: '#666' }}>
+                                            {item.yesterdaySales.toLocaleString()} 원
+                                        </td>
+                                        <td style={{ padding: '10px', textAlign: 'right', fontWeight: 'bold', color: '#1976D2' }}>
+                                            {item.settlementAmount ? item.settlementAmount.toLocaleString() : 0} 원
+                                        </td>
+                                        <td style={{ padding: '10px', textAlign: 'right', fontWeight: 'bold', color: '#d32f2f' }}>
+                                            {item.todaySales.toLocaleString()} 원
+                                        </td>
+                                        <td style={{ padding: '10px', textAlign: 'center' }}>
+                                            <button
+                                                onClick={() => handleDeleteUser(item.id)}
+                                                style={{
+                                                    padding: '5px 10px',
+                                                    background: '#ff1744',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '5px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '12px'
+                                                }}
+                                            >
+                                                점포 삭제
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="7" style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
+                                        등록된 점포가 없습니다.
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>

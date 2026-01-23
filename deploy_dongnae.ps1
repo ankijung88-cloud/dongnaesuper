@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $pemKey = "C:/jobproject/Key/Multi_bitnami_Key.pem"
 $serverIp = "13.125.161.160"
 $user = "bitnami"
-$remotePath = "/home/bitnami"
+$remotePath = "/home/bitnami/Multiserver"
 
 Write-Host "🚀 Starting Deployment for Dongnae Super (TAR)..." -ForegroundColor Green
 
@@ -35,19 +35,13 @@ tar -cf deploy.tar deploy_temp
 
 # 7. Upload to Server
 Write-Host "aaS Uploading to Server ($serverIp)..."
+# Ensure remote directory exists
+ssh -i $pemKey "$user@$serverIp" "mkdir -p $remotePath"
 scp -i $pemKey "deploy.tar" "$user@$serverIp`:$remotePath/deploy_dongnae.tar"
 
 # 8. Execute Remote Script
 Write-Host "🔧 Executing Remote Setup..."
-# ssh command
-$sshCmd = "tar -xf $remotePath/deploy_dongnae.tar -C $remotePath --wildcards '*/deploy_remote.sh' && chmod +x $remotePath/deploy_temp/deploy_remote.sh && sed -i 's/\r$//' $remotePath/deploy_temp/deploy_remote.sh && $remotePath/deploy_temp/deploy_remote.sh"
-# Actually, deploy_remote.sh is INSIDE the tar. We need to extract it first to run it?
-# The revised deploy_remote.sh expects existing tar. 
-# Let's just extract the script first.
-# Wait, tar -xf extracts to current dir? 
-# The tar content is deploy_temp/file
-# So extracting deploy_temp/deploy_remote.sh works.
-
-ssh -i $pemKey "$user@$serverIp" "tar -xf $remotePath/deploy_dongnae.tar -C $remotePath deploy_temp/deploy_remote.sh && chmod +x $remotePath/deploy_temp/deploy_remote.sh && sed -i 's/\r$//' $remotePath/deploy_temp/deploy_remote.sh && $remotePath/deploy_temp/deploy_remote.sh"
+# Extract and Run
+ssh -i $pemKey "$user@$serverIp" "tar -xf $remotePath/deploy_dongnae.tar -C $remotePath --strip-components=1 && chmod +x $remotePath/deploy_remote.sh && sed -i 's/\r$//' $remotePath/deploy_remote.sh && $remotePath/deploy_remote.sh"
 
 Write-Host "✅ Deployment Script Finished!" -ForegroundColor Cyan

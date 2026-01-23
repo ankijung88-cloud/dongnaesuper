@@ -26,16 +26,52 @@ const Login = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-            <h2>{t('loginTitle')}</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <input type="email" placeholder={t('emailPlaceholder')} value={email} onChange={e => setEmail(e.target.value)} required style={{ padding: '10px' }} />
-                <input type="password" placeholder={t('passwordPlaceholder')} value={password} onChange={e => setPassword(e.target.value)} required style={{ padding: '10px' }} />
-                <button type="submit" style={{ padding: '10px', background: '#2196F3', color: 'white', border: 'none' }}>{t('loginTitle')}</button>
-            </form>
-            <p style={{ marginTop: '10px' }}>
-                {t('noAccount')} <Link to="/signup">{t('signup')}</Link>
-            </p>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '80vh'
+        }}>
+            <div className="glass-card" style={{
+                maxWidth: '420px',
+                width: '100%',
+                padding: '40px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '24px'
+            }}>
+                <h2 style={{ textAlign: 'center', fontSize: '2rem', color: 'var(--primary-dark)', margin: 0 }}>
+                    {t('loginTitle')}
+                </h2>
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input
+                            type="email"
+                            placeholder={t('emailPlaceholder')}
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input
+                            type="password"
+                            placeholder={t('passwordPlaceholder')}
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <button type="submit" style={{ marginTop: '10px' }}>
+                        {t('loginTitle')}
+                    </button>
+                </form>
+
+                <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    {t('noAccount')} <Link to="/signup" style={{ fontWeight: '600' }}>{t('signup')}</Link>
+                </div>
+            </div>
         </div>
     );
 };

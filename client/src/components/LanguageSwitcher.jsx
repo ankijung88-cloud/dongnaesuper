@@ -5,7 +5,11 @@ const LanguageSwitcher = () => {
     const { lang, setLang } = useLanguage();
 
     return (
-        <select value={lang} onChange={(e) => setLang(e.target.value)} style={{ padding: '5px' }}>
+        <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            className="language-select"
+        >
             <option value="kr">🇰🇷 한국어</option>
             <option value="en">🇺🇸 English</option>
             <option value="vn">🇻🇳 Tiếng Việt</option>

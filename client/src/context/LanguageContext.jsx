@@ -49,7 +49,21 @@ const translations = {
         subTitle: "⚠️ 품절 시 대체 방법 (필수 선택):",
         subCall: "📞 전화주세요",
         subReplace: "🔄 비슷한 상품으로 대체 (사장님 추천)",
-        subRefund: "💰 해당 상품만 환불"
+        subRefund: "💰 해당 상품만 환불",
+        // Order History
+        orderHistory: "주문내역",
+        orderStatus: "주문상태",
+        orderDate: "주문일시",
+        orderTotal: "결제금액",
+        viewDetails: "상세보기",
+        statusReceived: "주문접수",
+        statusPreparing: "상품준비중",
+        statusDelivering: "배송중",
+        statusCompleted: "배송완료",
+        statusDelivering: "배송중",
+        statusCompleted: "배송완료",
+        noOrders: "주문 내역이 없습니다.",
+        continueShopping: "쇼핑 계속하기"
     },
     en: {
         // Navbar
@@ -99,7 +113,21 @@ const translations = {
         subTitle: "⚠️ If Out of Stock:",
         subCall: "📞 Call me",
         subReplace: "🔄 Sub with similar item",
-        subRefund: "💰 Refund item"
+        subRefund: "💰 Refund item",
+        // Order History
+        orderHistory: "Order History",
+        orderStatus: "Status",
+        orderDate: "Date",
+        orderTotal: "Total",
+        viewDetails: "Details",
+        statusReceived: "Received",
+        statusPreparing: "Preparing",
+        statusDelivering: "Delivering",
+        statusCompleted: "Completed",
+        statusDelivering: "Delivering",
+        statusCompleted: "Completed",
+        noOrders: "No order history found.",
+        continueShopping: "Continue Shopping"
     },
     cn: {
         // Navbar
@@ -149,7 +177,8 @@ const translations = {
         subTitle: "⚠️ 缺货时处理:",
         subCall: "📞 给我打电话",
         subReplace: "🔄 用相似商品替换",
-        subRefund: "💰 仅退款该商品"
+        subRefund: "💰 仅退款该商品",
+        continueShopping: "继续购物"
     },
     vn: {
         // Navbar
@@ -199,7 +228,8 @@ const translations = {
         subTitle: "⚠️ Nếu hết hàng:",
         subCall: "📞 Gọi cho tôi",
         subReplace: "🔄 Thay thế tương tự",
-        subRefund: "💰 Hoàn tiền"
+        subRefund: "💰 Hoàn tiền",
+        continueShopping: "Tiếp tục mua sắm"
     },
     th: {
         // Navbar
@@ -248,8 +278,8 @@ const translations = {
         clearCart: "ล้างตะกร้า",
         subTitle: "⚠️ หากสินค้าหมด:",
         subCall: "📞 โทรหาฉัน",
-        subReplace: "🔄 เปลี่ยนเป็นสินค้าใกล้เคียง",
-        subRefund: "💰 คืนเงิน"
+        subRefund: "💰 คืนเงิน",
+        continueShopping: "ซื้อสินค้าต่อ"
     }
 };
 

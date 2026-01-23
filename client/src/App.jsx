@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import ProductManage from './pages/ProductManage';
 import Cart from './pages/Cart';
+import OrderHistory from './pages/OrderHistory';
 import SuperAdmin from './pages/SuperAdmin';
 import AdminUserManage from './pages/AdminUserManage';
 import Navbar from './components/Navbar';
@@ -31,6 +32,11 @@ function App() {
               <Route path="/cart" element={
                 <ProtectedRoute allowedRoles={['user', 'owner', 'admin']}>
                   <Cart />
+                </ProtectedRoute>
+              } />
+              <Route path="/orders" element={
+                <ProtectedRoute allowedRoles={['user', 'owner', 'admin']}>
+                  <OrderHistory />
                 </ProtectedRoute>
               } />
               <Route path="/admin/products" element={

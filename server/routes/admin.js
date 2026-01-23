@@ -1,42 +1,69 @@
 const express = require('express');
 const router = express.Router();
 
-const { users, orders } = require('../data/mockDb');
+const { users, orders, getVisitorCount, save } = require('../data/mockDb');
 
 // GET /api/admin/stats
 router.get('/stats', (req, res) => {
-    // Calculate stats dynamically
     const totalUsers = users.length;
     const activeOrders = orders.filter(o => o.status !== 'COMPLETED').length;
-    const dailyVisitors = 120;
 
-    // Mock Sales by Region/Store
-    const salesByRegion = [
-        { region: '서울', store: '역삼점', settlementStatus: true, yesterdaySales: 1350000, settlementAmount: 1282500, todaySales: 170000 },
-        { region: '서울', store: '강남점', settlementStatus: true, yesterdaySales: 2100000, settlementAmount: 1995000, todaySales: 200000 },
-        { region: '경기', store: '분당점', settlementStatus: false, yesterdaySales: 900000, settlementAmount: 855000, todaySales: 80000 },
-        { region: '경기', store: '일산점', settlementStatus: true, yesterdaySales: 720000, settlementAmount: 684000, todaySales: 30000 },
-        { region: '인천', store: '부평점', settlementStatus: false, yesterdaySales: 580000, settlementAmount: 551000, todaySales: 40000 },
-        { region: '부산', store: '서면점', settlementStatus: true, yesterdaySales: 1050000, settlementAmount: 997500, todaySales: 50000 },
-    ];
+    // Get Real Visitor Count
+    const dailyVisitors = getVisitorCount();
 
-    // Calculate Total Commission (5% of Yesterday's Total Sales) as requested
-    const totalYesterdaySales = salesByRegion.reduce((acc, curr) => acc + curr.yesterdaySales, 0);
-    const totalSales = Math.floor(totalYesterdaySales * 0.05);
+    // Calculate Global Sales Logic (Reused from orders.js logic approx)
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfYesterday = new Date(startOfToday);
+    startOfYesterday.setDate(startOfToday.getDate() - 1);
 
-    const stats = {
+    const yesterdayOrders = orders.filter(o => {
+        const d = new Date(o.createdAt);
+        return d >= startOfYesterday && d < startOfToday;
+    });
+    const todayOrders = orders.filter(o => {
+        const d = new Date(o.createdAt);
+        return d >= startOfToday;
+    });
+
+    const globalYesterdaySales = yesterdayOrders.reduce((acc, o) => acc + o.total, 0);
+    const globalTodaySales = todayOrders.reduce((acc, o) => acc + o.total, 0);
+
+    // Dynamic Sales by Store (Owners)
+    const owners = users.filter(u => u.role === 'owner');
+
+    // Distribute sales? For this MVP, we assign all sales to the first owner found, or 'Store Owner'
+    // To be cleaner, if there are multiple owners, we just show 0 for the others to reflect "Real" data (that they have 0 sales).
+    const salesByRegion = owners.map(u => {
+        // Simple logic: If user is the main seed owner, give them the stats. widthout storeId, we can't really split.
+        const isMainOwner = u.email === 'owner@test.com';
+        const ySales = isMainOwner ? globalYesterdaySales : 0;
+        const tSales = isMainOwner ? globalTodaySales : 0;
+
+        return {
+            id: u.id, // Needed for delete
+            region: '서울', // Mock region
+            store: u.name, // Real Store Name
+            settlementStatus: ySales > 0,
+            yesterdaySales: ySales,
+            settlementAmount: Math.floor(ySales * 0.95),
+            todaySales: tSales
+        };
+    });
+
+    const totalSales = Math.floor(globalYesterdaySales * 0.05);
+
+    res.json({
         totalUsers,
-        totalSales, // Now 5% of Yesterday's Sales
+        totalSales,
         activeOrders,
         dailyVisitors,
         salesByRegion
-    };
-    res.json(stats);
+    });
 });
 
 // GET /api/admin/users
 router.get('/users', (req, res) => {
-    // Return all users except passwords if you want to be safe, but for Admin Dashboard strictness isn't critical yet
     const safeUsers = users.map(u => ({
         id: u.id,
         name: u.name,
@@ -45,6 +72,19 @@ router.get('/users', (req, res) => {
         joinDate: u.joinDate
     }));
     res.json(safeUsers);
+});
+
+// DELETE /api/admin/users/:id
+router.delete('/users/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const index = users.findIndex(u => u.id === id);
+    if (index !== -1) {
+        users.splice(index, 1);
+        save();
+        res.json({ message: 'User deleted' });
+    } else {
+        res.status(404).json({ error: 'User not found' });
+    }
 });
 
 module.exports = router;

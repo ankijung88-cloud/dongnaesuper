@@ -44,58 +44,59 @@ router.post('/register', (req, res) => {
             role: newUser.role
         }
     });
+});
 
-    // GET /api/auth/users (Admin Only)
-    router.get('/users', auth, (req, res) => {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ msg: 'Access denied' });
+// GET /api/auth/users (Admin Only)
+router.get('/users', auth, (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ msg: 'Access denied' });
+    }
+    // Return users without passwords
+    const safeUsers = users.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        joinDate: u.joinDate
+    }));
+    res.json(safeUsers);
+});
+
+// POST /api/auth/create-owner (Admin Only)
+router.post('/create-owner', auth, (req, res) => {
+    // Check if admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ msg: 'Access denied: Admins only' });
+    }
+
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ msg: 'Please enter all fields' });
+    }
+
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) return res.status(400).json({ msg: 'User already exists' });
+
+    const newUser = {
+        id: users.length + 1,
+        name,
+        email,
+        password,
+        role: 'owner',
+        joinDate: new Date().toISOString().split('T')[0]
+    };
+
+    users.push(newUser);
+    save(); // Added save() here to persist created owners
+
+    res.json({
+        msg: 'Store Owner created successfully',
+        owner: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email
         }
-        // Return users without passwords
-        const safeUsers = users.map(u => ({
-            id: u.id,
-            name: u.name,
-            email: u.email,
-            role: u.role,
-            joinDate: u.joinDate
-        }));
-        res.json(safeUsers);
-    });
-
-    // POST /api/auth/create-owner (Admin Only)
-    router.post('/create-owner', auth, (req, res) => {
-        // Check if admin
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ msg: 'Access denied: Admins only' });
-        }
-
-        const { name, email, password } = req.body;
-
-        if (!name || !email || !password) {
-            return res.status(400).json({ msg: 'Please enter all fields' });
-        }
-
-        const existingUser = users.find(u => u.email === email);
-        if (existingUser) return res.status(400).json({ msg: 'User already exists' });
-
-        const newUser = {
-            id: users.length + 1,
-            name,
-            email,
-            password,
-            role: 'owner',
-            joinDate: new Date().toISOString().split('T')[0]
-        };
-
-        users.push(newUser);
-
-        res.json({
-            msg: 'Store Owner created successfully',
-            owner: {
-                id: newUser.id,
-                name: newUser.name,
-                email: newUser.email
-            }
-        });
     });
 });
 

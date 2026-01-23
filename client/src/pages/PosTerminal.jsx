@@ -36,7 +36,7 @@ const PosTerminal = () => {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', fontFamily: 'monospace' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', fontFamily: 'monospace' }}>
             <h1 style={{ borderBottom: '2px solid #333', paddingBottom: '10px' }}>📟 가상 POS 터미널</h1>
 
             <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>

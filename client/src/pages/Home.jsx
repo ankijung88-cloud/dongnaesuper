@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Storage from '../utils/storage';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
     const [filter, setFilter] = useState('all'); // 'all' or 'timedeal'
     const { t, lang } = useLanguage();
+    const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState(t('allCategories'));
     const [selectedSubCategory, setSelectedSubCategory] = useState(t('allCategories'));
 
@@ -35,13 +37,17 @@ const Home = () => {
     };
 
     const addToCart = (product) => {
+        if (!user) {
+            alert(t('loginRequired') || '로그인이 필요합니다.');
+            return;
+        }
         // Pass the full product, but Cart needs to handle localization too
         Storage.updateCart(product, 1, 'add');
         alert(`${getLocalName(product)} Added!`);
     };
 
     return (
-        <div style={{ padding: '10px' }}>
+        <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
                 <div className="header-left-section">
                     <h2 style={{ margin: 0, whiteSpace: 'nowrap' }}>{t('martSearch')}</h2>

@@ -25,25 +25,42 @@ const Signup = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-            <h2>{t('signupTitle')}</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <input name="name" type="text" placeholder={t('namePlaceholder')} onChange={handleChange} required style={{ padding: '10px' }} />
-                <input name="email" type="email" placeholder={t('emailPlaceholder')} onChange={handleChange} required style={{ padding: '10px' }} />
-                <input name="password" type="password" placeholder={t('passwordPlaceholder')} onChange={handleChange} required style={{ padding: '10px' }} />
+        <div className="auth-container">
+            <div className="glass-card auth-card">
+                <h2 style={{ textAlign: 'center', fontSize: '2rem', color: 'var(--primary-dark)', margin: 0 }}>
+                    {t('signupTitle')}
+                </h2>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input name="name" type="text" placeholder={t('namePlaceholder')} onChange={handleChange} required />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input name="email" type="email" placeholder={t('emailPlaceholder')} onChange={handleChange} required />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input name="password" type="password" placeholder={t('passwordPlaceholder')} onChange={handleChange} required />
+                    </div>
 
-                <label>{t('roleLabel')}</label>
-                <select name="role" value={formData.role} onChange={handleChange} style={{ padding: '10px' }}>
-                    <option value="user">{t('roleUser')}</option>
-                    <option value="owner">{t('roleOwner')}</option>
-                    <option value="admin">{t('roleAdmin')}</option>
-                </select>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <label style={{ fontWeight: '600', color: 'var(--text-muted)' }}>{t('roleLabel')}</label>
+                        <select name="role" value={formData.role} onChange={handleChange} style={{
+                            padding: '12px',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(0,0,0,0.1)',
+                            background: 'white'
+                        }}>
+                            <option value="user">{t('roleUser')}</option>
+                            <option value="owner">{t('roleOwner')}</option>
+                            <option value="admin">{t('roleAdmin')}</option>
+                        </select>
+                    </div>
 
-                <button type="submit" style={{ padding: '10px', background: '#4CAF50', color: 'white', border: 'none' }}>{t('signupTitle')}</button>
-            </form>
-            <p style={{ marginTop: '10px' }}>
-                {t('hasAccount')} <Link to="/login">{t('login')}</Link>
-            </p>
+                    <button type="submit" style={{ marginTop: '10px' }}>{t('signupTitle')}</button>
+                </form>
+                <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    {t('hasAccount')} <Link to="/login" style={{ fontWeight: '600' }}>{t('login')}</Link>
+                </div>
+            </div>
         </div>
     );
 };

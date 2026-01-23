@@ -30,11 +30,17 @@ try {
 // Save function
 const save = () => {
     try {
-        fs.writeFileSync(DATA_FILE, JSON.stringify({ users, products, orders }, null, 2));
+        fs.writeFileSync(DATA_FILE, JSON.stringify({ users, products, orders, visitorCount }, null, 2));
         console.log('💾 Database saved');
     } catch (err) {
         console.error('Failed to save database:', err);
     }
 };
 
-module.exports = { users, products, orders, save };
+let visitorCount = 0;
+const incrementVisitorCount = () => {
+    visitorCount++;
+    save();
+};
+
+module.exports = { users, products, orders, visitorCount, incrementVisitorCount, save, getVisitorCount: () => visitorCount };

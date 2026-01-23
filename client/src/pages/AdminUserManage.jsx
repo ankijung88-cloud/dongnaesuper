@@ -46,7 +46,7 @@ const AdminUserManage = () => {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2>👥 사용자 관리 (슈퍼 관리자용)</h2>
 
             {/* Create Owner Form */}
